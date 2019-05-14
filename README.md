@@ -1,10 +1,10 @@
 # Cubbyhole
 
-[ [JAVA][java-badge]][java]
-[ [SPRING][spring-badge]][spring]
+[![JAVA][java-badge]][java]
+[![SPRING][spring-badge]][spring]
 
-[ [Travis Build Status][build-badge]][build]
-[ [Coverage Status][coverage-badge]][coverage]
+[![Travis Build Status][build-badge]][build]
+[![Coverage Status][coverage-badge]][coverage]
 
 ## Statement
 
