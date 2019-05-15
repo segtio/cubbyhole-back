@@ -1,6 +1,6 @@
 package com.kata.cubbyhole.runner;
 
-import com.kata.cubbyhole.filter.ParametrizedTestMethodsFilter;
+import com.kata.cubbyhole.runner.filter.ParametrizedTestMethodsFilter;
 import junitparams.internal.ParameterisedTestClassRunner;
 import junitparams.internal.TestMethod;
 import org.junit.After;

@@ -41,7 +41,7 @@ public class UserRepositoryTest {
         Type listType = new TypeToken<ArrayList<User>>() {
         }.getType();
         List<User> users = new Gson().fromJson(StreamUtils.copyToString(usersJson.getInputStream(), Charset.defaultCharset()), listType);
-        users.forEach(userRepository::save);
+       userRepository.saveAll(users);
     }
 
     @Test

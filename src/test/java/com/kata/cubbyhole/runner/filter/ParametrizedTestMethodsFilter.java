@@ -1,4 +1,4 @@
-package com.kata.cubbyhole.filter;
+package com.kata.cubbyhole.runner.filter;
 
 import com.kata.cubbyhole.runner.SpringJUnitParams;
 import org.junit.runner.manipulation.Filter;
