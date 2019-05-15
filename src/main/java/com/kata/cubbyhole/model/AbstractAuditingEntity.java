@@ -19,12 +19,12 @@ import java.time.Instant;
         value = {"createdAt", "updatedAt"},
         allowGetters = true
 )
-public abstract class AbstractAuditingEntity  implements Serializable {
+public abstract class AbstractAuditingEntity implements Serializable {
     private static final long serialVersionUID = 1L;
 
     @CreatedDate
     @Column(nullable = false, updatable = false)
-    private Instant createdAt =  Instant.now();
+    private Instant createdAt = Instant.now();
 
     @LastModifiedDate
     @Column(nullable = false)
