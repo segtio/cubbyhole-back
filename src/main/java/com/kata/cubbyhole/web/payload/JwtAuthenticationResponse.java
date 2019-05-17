@@ -1,4 +1,4 @@
-package com.kata.cubbyhole.payload;
+package com.kata.cubbyhole.web.payload;
 
 public class JwtAuthenticationResponse {
     private String accessToken;

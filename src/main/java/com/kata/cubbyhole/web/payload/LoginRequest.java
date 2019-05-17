@@ -1,4 +1,4 @@
-package com.kata.cubbyhole.payload;
+package com.kata.cubbyhole.web.payload;
 
 import javax.validation.constraints.NotBlank;
 
