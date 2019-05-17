@@ -49,7 +49,7 @@ public class RoleRepositoryTest {
     @Test
     @Parameters({"ROLE_ADMIN, true", "azerty, false"})
     public void should_find_by_name(String roleName, boolean isPresent) {
-        Optional<Role> roleOptional = roleRepository.findByName(RoleName.valueOf(roleName));
+        Optional<Role> roleOptional = roleRepository.findByName(RoleName.getRoleName(roleName));
 
         assertThat(roleOptional.isPresent()).isEqualTo(isPresent);
     }
