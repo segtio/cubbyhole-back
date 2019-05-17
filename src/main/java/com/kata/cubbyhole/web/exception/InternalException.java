@@ -1,4 +1,4 @@
-package com.kata.cubbyhole.exception;
+package com.kata.cubbyhole.web.exception;
 
 import org.springframework.web.bind.annotation.ResponseStatus;
 
