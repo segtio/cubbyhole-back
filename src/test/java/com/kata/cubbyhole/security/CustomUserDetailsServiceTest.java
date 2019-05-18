@@ -29,10 +29,10 @@ public class CustomUserDetailsServiceTest {
     @Spy
     private UserRepository userRepository;
 
-    private PodamFactory podamFactory;
-
     @InjectMocks
     private CustomUserDetailsService customUserDetailsService;
+
+    private PodamFactory podamFactory;
 
     @Before
     public void setup() {
