@@ -9,7 +9,7 @@ import static com.kata.cubbyhole.config.Constants.MAX_AGE_SECS;
 
 @Configuration
 @EnableAspectJAutoProxy
-public class WebMvcConfig implements WebMvcConfigurer {
+public class WebMvcConfiguration implements WebMvcConfigurer {
 
     @Override
     public void addCorsMappings(CorsRegistry registry) {

@@ -3,10 +3,10 @@ package com.kata.cubbyhole.web.payload;
 import javax.validation.constraints.NotBlank;
 
 public class LoginRequest {
-    @NotBlank
+    @NotBlank(message = "usernameOrEmail cannot be empty")
     private String usernameOrEmail;
 
-    @NotBlank
+    @NotBlank(message = "Password cannot be empty")
     private String password;
 
     public LoginRequest() {

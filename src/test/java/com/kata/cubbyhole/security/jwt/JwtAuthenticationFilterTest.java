@@ -54,7 +54,6 @@ public class JwtAuthenticationFilterTest {
     @Before
     public void setup() {
         podamFactory = new PodamFactoryImpl();
-        jwtAuthenticationFilter = new JwtAuthenticationFilter();
         MockitoAnnotations.initMocks(this);
     }
 
