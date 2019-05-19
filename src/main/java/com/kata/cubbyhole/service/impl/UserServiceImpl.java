@@ -1,5 +1,6 @@
 package com.kata.cubbyhole.service.impl;
 
+import com.kata.cubbyhole.model.User;
 import com.kata.cubbyhole.security.jwt.JwtTokenProvider;
 import com.kata.cubbyhole.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -37,5 +38,10 @@ public class UserServiceImpl implements UserService {
     @Override
     public String generateToken(Authentication authentication) {
         return tokenProvider.generateToken(authentication);
+    }
+
+    @Override
+    public User register(String name, String usename, String email, String password) {
+        return null;
     }
 }

@@ -1,5 +1,7 @@
 package com.kata.cubbyhole.service;
 
+import com.kata.cubbyhole.model.User;
+import com.kata.cubbyhole.repository.UserRepository;
 import com.kata.cubbyhole.runner.SpringJUnitParams;
 import com.kata.cubbyhole.security.jwt.JwtTokenProvider;
 import com.kata.cubbyhole.security.mapper.UserPrincipal;
@@ -31,7 +33,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 @Transactional
 public class UserServiceTest {
 
-    private UserService userService;
 
     @Autowired
     @Mock
@@ -40,6 +41,11 @@ public class UserServiceTest {
     @Autowired
     @Mock
     private AuthenticationManager authenticationManager;
+
+    @Autowired
+    private UserRepository userRepository;
+
+    private UserService userService;
 
     private PodamFactory podamFactory;
 
@@ -80,5 +86,15 @@ public class UserServiceTest {
 
         assertThat(token).isNotEmpty();
         assertThat(jwtTokenProvider.validateToken(token)).isTrue();
+    }
+
+    @Test
+    @Parameters({"Corinne Conway, Mckay, corinnemckay@zidox.com, Hopkins"})
+    public void should_register_user(String name, String username, String email, String password) {
+        User user = userService.register(name, username, email, password);
+
+        boolean registered = userRepository.existsByUsername(user.getUsername());
+
+        assertThat(registered).isTrue();
     }
 }
