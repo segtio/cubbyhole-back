@@ -1,7 +1,7 @@
-package com.kata.cubbyhole.config.log.aspect;
+package com.kata.cubbyhole.aop.logging;
 
-import com.kata.cubbyhole.config.log.LogWriter;
-import com.kata.cubbyhole.config.log.annotation.MethodLogger;
+import com.kata.cubbyhole.config.logging.LogWriter;
+import com.kata.cubbyhole.config.logging.annotation.MethodLogger;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
@@ -16,8 +16,8 @@ import java.lang.reflect.Method;
 @Component
 public class MethodLoggerAspect {
 
-    @Pointcut("@within(com.kata.cubbyhole.config.log.annotation.MethodLogger)" +
-            "|| @annotation(com.kata.cubbyhole.config.log.annotation.MethodLogger)")
+    @Pointcut("@within(com.kata.cubbyhole.config.logging.annotation.MethodLogger)" +
+            "|| @annotation(com.kata.cubbyhole.config.logging.annotation.MethodLogger)")
     public void methodLoggerPointcut() {
         // Method is empty as this is just a Pointcut, the implementations are in the advices.
     }

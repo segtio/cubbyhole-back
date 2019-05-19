@@ -1,6 +1,6 @@
 package com.kata.cubbyhole.web.rest;
 
-import com.kata.cubbyhole.config.log.annotation.MethodLogger;
+import com.kata.cubbyhole.config.logging.annotation.MethodLogger;
 import com.kata.cubbyhole.model.Role;
 import com.kata.cubbyhole.model.User;
 import com.kata.cubbyhole.repository.RoleRepository;

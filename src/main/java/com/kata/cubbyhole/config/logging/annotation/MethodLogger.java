@@ -1,4 +1,4 @@
-package com.kata.cubbyhole.config.log.annotation;
+package com.kata.cubbyhole.config.logging.annotation;
 
 import org.springframework.boot.logging.LogLevel;
 

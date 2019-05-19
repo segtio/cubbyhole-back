@@ -10,6 +10,7 @@ public class LoginRequest {
     private String password;
 
     public LoginRequest() {
+        // Default Constructor
     }
 
     public LoginRequest(@NotBlank String usernameOrEmail, @NotBlank String password) {
