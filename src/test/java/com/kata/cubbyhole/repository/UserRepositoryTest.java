@@ -1,7 +1,5 @@
 package com.kata.cubbyhole.repository;
 
-import com.google.gson.Gson;
-import com.google.gson.reflect.TypeToken;
 import com.kata.cubbyhole.model.User;
 import com.kata.cubbyhole.runner.SpringJUnitParams;
 import junitparams.Parameters;

@@ -5,6 +5,7 @@ import org.hibernate.annotations.FetchMode;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 import java.time.Instant;
 
 @Entity
@@ -15,22 +16,22 @@ public class Subscription extends AbstractAuditingEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @NotBlank
+    @NotNull
     @Column(nullable = false)
     private Instant expireOn;
 
-    @NotBlank
+    @NotNull
     @OneToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
 
-    @NotBlank
+    @NotNull
     @ManyToOne(fetch = FetchType.EAGER, optional = false)
     @Fetch(FetchMode.SELECT)
     @JoinColumn(name = "plan_id", nullable = false)
     private Plan plan;
 
-    public Subscription(@NotBlank Instant expireOn, @NotBlank User user, @NotBlank Plan plan) {
+    public Subscription(@NotNull Instant expireOn, @NotBlank User user, @NotBlank Plan plan) {
         this.expireOn = expireOn;
         this.user = user;
         this.plan = plan;

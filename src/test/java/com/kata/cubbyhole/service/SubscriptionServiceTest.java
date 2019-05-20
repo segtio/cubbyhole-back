@@ -4,9 +4,12 @@ import com.kata.cubbyhole.model.Plan;
 import com.kata.cubbyhole.model.Subscription;
 import com.kata.cubbyhole.model.User;
 import com.kata.cubbyhole.repository.PlanRepository;
+import com.kata.cubbyhole.repository.SubscriptionRepository;
 import com.kata.cubbyhole.repository.UserRepository;
 import com.kata.cubbyhole.runner.SpringJUnitParams;
+import com.kata.cubbyhole.service.impl.SubscriptionServiceImpl;
 import junitparams.Parameters;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,6 +34,14 @@ public class SubscriptionServiceTest {
 
     @Autowired
     private PlanRepository planRepository;
+
+    @Autowired
+    private SubscriptionRepository subscriptionRepository;
+
+    @Before
+    public void setup() {
+        this.subscriptionService = new SubscriptionServiceImpl(subscriptionRepository);
+    }
 
 
     @Test

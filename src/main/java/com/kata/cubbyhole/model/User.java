@@ -59,7 +59,7 @@ public class User extends AbstractAuditingEntity {
             orphanRemoval = true
     )
     @Fetch(FetchMode.SELECT)
-    @JoinColumn(name = "subscriptions_id", nullable = false)
+    @JoinColumn(name = "subscriptions_id", nullable = true)
     private Subscription subscriptions;
 
     public User() {
