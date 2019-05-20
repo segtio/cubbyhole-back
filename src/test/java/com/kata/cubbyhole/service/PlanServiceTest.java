@@ -64,8 +64,8 @@ public class PlanServiceTest {
         List<Plan> plans = planService.findAll();
         planService.deleteById(plans.get(0).getId());
 
-        Optional<Plan> plan = planService.findById(plans.get(0).getId());
+        boolean exists = planRepository.existsById(plans.get(0).getId());
 
-        assertThat(plan.isPresent()).isFalse();
+        assertThat(exists).isFalse();
     }
 }
