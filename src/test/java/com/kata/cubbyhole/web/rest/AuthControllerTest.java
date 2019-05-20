@@ -1,32 +1,29 @@
 package com.kata.cubbyhole.web.rest;
 
-import com.kata.cubbyhole.model.Role;
 import com.kata.cubbyhole.model.User;
-import com.kata.cubbyhole.model.enumeration.RoleName;
-import com.kata.cubbyhole.repository.RoleRepository;
 import com.kata.cubbyhole.repository.UserRepository;
 import com.kata.cubbyhole.runner.SpringJUnitParams;
-import com.kata.cubbyhole.security.jwt.JwtTokenProvider;
+import com.kata.cubbyhole.service.UserService;
 import com.kata.cubbyhole.utils.TestUtil;
 import com.kata.cubbyhole.web.exception.ErrorHandlerAdvice;
+import com.kata.cubbyhole.web.exception.InternalException;
 import com.kata.cubbyhole.web.payload.LoginRequest;
 import com.kata.cubbyhole.web.payload.SignUpRequest;
 import junitparams.Parameters;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.*;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.Mockito;
+import org.mockito.MockitoAnnotations;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.result.MockMvcResultHandlers;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
-
-import java.util.Optional;
 
 import static org.springframework.http.HttpStatus.BAD_REQUEST;
 import static org.springframework.http.HttpStatus.INTERNAL_SERVER_ERROR;
@@ -41,24 +38,12 @@ public class AuthControllerTest {
     private final String RESOURCE_PREFIX = "/api/v1/auth";
 
     @Autowired
-    @Spy
-    private JwtTokenProvider jwtTokenProvider;
-
-    @Autowired
     @Mock
-    private AuthenticationManager authenticationManager;
+    private UserService userService;
 
     @Autowired
     @Mock
     private UserRepository userRepository;
-
-    @Autowired
-    @Mock
-    private RoleRepository roleRepository;
-
-    @Autowired
-    @Mock
-    private PasswordEncoder passwordEncoder;
 
     @InjectMocks
     private AuthController authController;
@@ -68,7 +53,7 @@ public class AuthControllerTest {
     @Before
     public void setup() {
         MockitoAnnotations.initMocks(this);
-        authController = new AuthController(authenticationManager, jwtTokenProvider, userRepository, roleRepository, passwordEncoder);
+        authController = new AuthController(userService, userRepository);
         this.restMvc = MockMvcBuilders
                 .standaloneSetup(authController)
                 .setControllerAdvice(new ErrorHandlerAdvice())
@@ -84,8 +69,8 @@ public class AuthControllerTest {
                 usernameOrEmail,
                 password);
 
-        Mockito.doReturn(usernamePasswordAuthenticationToken).when(authenticationManager).authenticate(usernamePasswordAuthenticationToken);
-        Mockito.doReturn(token).when(jwtTokenProvider).generateToken(Mockito.any(Authentication.class));
+        Mockito.doReturn(usernamePasswordAuthenticationToken).when(userService).authenticate(usernameOrEmail, password);
+        Mockito.doReturn(token).when(userService).generateToken(Mockito.any(Authentication.class));
 
         restMvc.perform(post(RESOURCE_PREFIX + "/login")
                 .contentType(TestUtil.APPLICATION_JSON_UTF8)
@@ -109,8 +94,7 @@ public class AuthControllerTest {
     public void should_register_user_and_return_success_message(String name, String username, String email, String password) throws Exception {
         SignUpRequest user = new SignUpRequest(name, username, email, password);
 
-        Mockito.doReturn(Optional.of(new Role())).when(roleRepository).findByName(Mockito.any(RoleName.class));
-        Mockito.doReturn(new User(name, username, email, password)).when(userRepository).save(Mockito.any(User.class));
+        Mockito.doReturn(new User(name, username, email, password)).when(userService).register(name, username, email, password);
 
         restMvc.perform(post(RESOURCE_PREFIX + "/register")
                 .contentType(TestUtil.APPLICATION_JSON_UTF8)
@@ -124,7 +108,7 @@ public class AuthControllerTest {
     public void should_500_when_default_role_is_not_saved(String name, String username, String email, String password) throws Exception {
         SignUpRequest user = new SignUpRequest(name, username, email, password);
 
-        Mockito.doReturn(Optional.empty()).when(roleRepository).findByName(Mockito.any(RoleName.class));
+        Mockito.doThrow(new InternalException("User Role not set.")).when(userService).register(name, username, email, password);
 
         restMvc.perform(post(RESOURCE_PREFIX + "/register")
                 .contentType(TestUtil.APPLICATION_JSON_UTF8)
