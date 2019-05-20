@@ -34,7 +34,7 @@ public class JwtTokenProviderTest {
     @Value("${app.jwtSecret}")
     private String jwtSecret;
 
-    @Value(value = "classpath:repository/jwt.txt")
+    @Value(value = "classpath:jwt.txt")
     private Resource tokenResource;
 
     private PodamFactory podamFactory;
