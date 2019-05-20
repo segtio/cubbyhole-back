@@ -2,6 +2,7 @@ package com.kata.cubbyhole.model;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
 @Entity
@@ -16,24 +17,24 @@ public class Plan extends AbstractAuditingEntity {
     @Size(max = 40)
     private String name;
 
-    @NotBlank
+    @NotNull
     private Double price;
 
-    @NotBlank
+    @NotNull
     private Long duration;
 
-    @NotBlank
-    private Long storageSpace;
+    @NotNull
+    private Long storagespace;
 
     public Plan() {
         // Default Constructor
     }
 
-    public Plan(@NotBlank @Size(max = 40) String name, @NotBlank Double price, @NotBlank Long duration, @NotBlank Long storageSpace) {
+    public Plan(@NotBlank @Size(max = 40) String name, @NotNull Double price, @NotNull Long duration, @NotNull Long storagespace) {
         this.name = name;
         this.price = price;
         this.duration = duration;
-        this.storageSpace = storageSpace;
+        this.storagespace = storagespace;
     }
 
     public Long getId() {
@@ -68,11 +69,11 @@ public class Plan extends AbstractAuditingEntity {
         this.duration = duration;
     }
 
-    public Long getStorageSpace() {
-        return storageSpace;
+    public Long getStoragespace() {
+        return storagespace;
     }
 
-    public void setStorageSpace(Long storageSpace) {
-        this.storageSpace = storageSpace;
+    public void setStoragespace(Long storagespace) {
+        this.storagespace = storagespace;
     }
 }

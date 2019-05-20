@@ -1,16 +1,19 @@
 package com.kata.cubbyhole.service;
 
 import com.kata.cubbyhole.model.Plan;
+import com.kata.cubbyhole.repository.PlanRepository;
 import com.kata.cubbyhole.runner.SpringJUnitParams;
+import com.kata.cubbyhole.service.impl.PlanServiceImpl;
+import junitparams.Parameters;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
-import uk.co.jemos.podam.api.PodamFactory;
-import uk.co.jemos.podam.api.PodamFactoryImpl;
 
 import java.util.List;
+import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -22,17 +25,19 @@ public class PlanServiceTest {
 
     private PlanService planService;
 
-    private PodamFactory podamFactory;
+    @Autowired
+    private PlanRepository planRepository;
 
 
     @Before
     public void setup() {
-        podamFactory = new PodamFactoryImpl();
+        this.planService = new PlanServiceImpl(planRepository);
     }
 
     @Test
-    public void should_save_plan() {
-        Plan plan = podamFactory.manufacturePojo(Plan.class);
+    @Parameters({"Gold, 100, 60, 100"})
+    public void should_save_plan(String name, Double price, Long duration, Long storagespace) {
+        Plan plan = new Plan(name, price, duration, storagespace);
         Plan CreatedPlan = planService.save(plan);
 
         assertThat(CreatedPlan).isNotNull();
@@ -44,24 +49,23 @@ public class PlanServiceTest {
         List<Plan> plans = planService.findAll();
 
         assertThat(plans).isNotEmpty();
-        assertThat(plans.size()).isEqualTo(2);
     }
 
     @Test
     public void should_find_plan_by_id() {
-        Plan plan = planService.findOne(1L);
+        Optional<Plan> plan = planService.findById(1L);
 
-        assertThat(plan).isNotNull();
-        assertThat(plan.getId()).isEqualTo(1L);
+        assertThat(plan.isPresent()).isTrue();
+        assertThat(plan.get().getId()).isEqualTo(1L);
     }
 
     @Test
     public void should_delete_plan() {
         List<Plan> plans = planService.findAll();
-        planService.delete(plans.get(0).getId());
+        planService.deleteById(plans.get(0).getId());
 
-        Plan plan = planService.findOne(plans.get(0).getId());
+        Optional<Plan> plan = planService.findById(plans.get(0).getId());
 
-        assertThat(plan).isNull();
+        assertThat(plan.isPresent()).isFalse();
     }
 }
