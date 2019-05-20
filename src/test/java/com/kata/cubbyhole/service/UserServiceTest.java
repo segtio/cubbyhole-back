@@ -1,11 +1,15 @@
 package com.kata.cubbyhole.service;
 
+import com.kata.cubbyhole.model.Role;
 import com.kata.cubbyhole.model.User;
+import com.kata.cubbyhole.model.enumeration.RoleName;
+import com.kata.cubbyhole.repository.RoleRepository;
 import com.kata.cubbyhole.repository.UserRepository;
 import com.kata.cubbyhole.runner.SpringJUnitParams;
 import com.kata.cubbyhole.security.jwt.JwtTokenProvider;
 import com.kata.cubbyhole.security.mapper.UserPrincipal;
 import com.kata.cubbyhole.service.impl.UserServiceImpl;
+import com.kata.cubbyhole.web.exception.InternalException;
 import junitparams.Parameters;
 import org.junit.Before;
 import org.junit.Test;
@@ -19,11 +23,13 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.transaction.annotation.Transactional;
 import uk.co.jemos.podam.api.PodamFactory;
 import uk.co.jemos.podam.api.PodamFactoryImpl;
 
 import java.util.Collections;
+import java.util.Optional;
 
 import static com.kata.cubbyhole.model.enumeration.RoleName.ROLE_USER;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -33,9 +39,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 @Transactional
 public class UserServiceTest {
 
-
     @Autowired
-    @Mock
     private JwtTokenProvider jwtTokenProvider;
 
     @Autowired
@@ -45,6 +49,13 @@ public class UserServiceTest {
     @Autowired
     private UserRepository userRepository;
 
+    @Autowired
+    private PasswordEncoder passwordEncoder;
+
+    @Autowired
+    @Mock
+    private RoleRepository roleRepository;
+
     private UserService userService;
 
     private PodamFactory podamFactory;
@@ -52,7 +63,7 @@ public class UserServiceTest {
     @Before
     public void setup() {
         MockitoAnnotations.initMocks(this);
-        userService = new UserServiceImpl(authenticationManager, jwtTokenProvider);
+        userService = new UserServiceImpl(authenticationManager, jwtTokenProvider, passwordEncoder, roleRepository, userRepository);
         podamFactory = new PodamFactoryImpl();
     }
 
@@ -91,10 +102,19 @@ public class UserServiceTest {
     @Test
     @Parameters({"Corinne Conway, Mckay, corinnemckay@zidox.com, Hopkins"})
     public void should_register_user(String name, String username, String email, String password) {
-        User user = userService.register(name, username, email, password);
+        Mockito.doReturn(Optional.of(new Role())).when(roleRepository).findByName(Mockito.any(RoleName.class));
 
+        User user = userService.register(name, username, email, password);
         boolean registered = userRepository.existsByUsername(user.getUsername());
 
         assertThat(registered).isTrue();
+    }
+
+    @Test(expected = InternalException.class)
+    @Parameters({"Corinne Conway, Mckay, corinnemckay@zidox.com, Hopkins"})
+    public void should_Throw_Error_when_role_is_not_set(String name, String username, String email, String password) {
+        Mockito.doReturn(Optional.empty()).when(roleRepository).findByName(Mockito.any(RoleName.class));
+
+        userService.register(name, username, email, password);
     }
 }
