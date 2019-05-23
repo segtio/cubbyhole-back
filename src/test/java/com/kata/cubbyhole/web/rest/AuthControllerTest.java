@@ -1,5 +1,6 @@
 package com.kata.cubbyhole.web.rest;
 
+import com.kata.cubbyhole.config.Constants;
 import com.kata.cubbyhole.model.User;
 import com.kata.cubbyhole.repository.UserRepository;
 import com.kata.cubbyhole.runner.SpringJUnitParams;
@@ -35,7 +36,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @SpringBootTest
 public class AuthControllerTest {
 
-    private final String RESOURCE_PREFIX = "/api/v1/auth";
+    private final String RESOURCE_PREFIX = Constants.APIV1_PREFIX + "/auth";
 
     @Autowired
     @Mock
@@ -63,7 +64,7 @@ public class AuthControllerTest {
 
     @Test
     @Parameters({"Mckay, Hopkins, thetoken"})
-    public void should_login_user_and_return_token(String usernameOrEmail, String password, String token) throws Exception {
+    public void should_return_token_when_user_logged_in(String usernameOrEmail, String password, String token) throws Exception {
         LoginRequest user = new LoginRequest(usernameOrEmail, password);
         UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken = new UsernamePasswordAuthenticationToken(
                 usernameOrEmail,
@@ -80,7 +81,7 @@ public class AuthControllerTest {
     }
 
     @Test
-    public void should_400_when_usernameOrEmail_or_password_empty() throws Exception {
+    public void should_return_400_code_when_usernameOrEmail_empty() throws Exception {
         LoginRequest user = new LoginRequest(null, "azerty");
         restMvc.perform(post(RESOURCE_PREFIX + "/login")
                 .contentType(TestUtil.APPLICATION_JSON_UTF8)
@@ -90,8 +91,18 @@ public class AuthControllerTest {
     }
 
     @Test
+    public void should_return_400_code_when_password_empty() throws Exception {
+        LoginRequest user = new LoginRequest("azerty", null);
+        restMvc.perform(post(RESOURCE_PREFIX + "/login")
+                .contentType(TestUtil.APPLICATION_JSON_UTF8)
+                .content(TestUtil.convertObjectToJsonBytes(user)))
+                .andExpect(status().isBadRequest())
+                .andExpect(content().string(String.format("{\"message\":\"Password cannot be empty \",\"errorCode\":\"%s\"}", BAD_REQUEST.getReasonPhrase())));
+    }
+
+    @Test
     @Parameters({"Corinne Conway, Mckay, corinnemckay@zidox.com, Hopkins"})
-    public void should_register_user_and_return_success_message(String name, String username, String email, String password) throws Exception {
+    public void should_return_message_sucess_when_user_register(String name, String username, String email, String password) throws Exception {
         SignUpRequest user = new SignUpRequest(name, username, email, password);
 
         Mockito.doReturn(new User(name, username, email, password)).when(userService).register(name, username, email, password);
@@ -105,7 +116,7 @@ public class AuthControllerTest {
 
     @Test
     @Parameters({"Corinne Conway, Mckay, corinnemckay@zidox.com, Hopkins"})
-    public void should_500_when_default_role_is_not_saved(String name, String username, String email, String password) throws Exception {
+    public void should_return_500_code_when_default_role_is_not_saved(String name, String username, String email, String password) throws Exception {
         SignUpRequest user = new SignUpRequest(name, username, email, password);
 
         Mockito.doThrow(new InternalException("User Role not set.")).when(userService).register(name, username, email, password);
@@ -118,7 +129,7 @@ public class AuthControllerTest {
     }
 
     @Test
-    public void should_400_when_name_or_username_or_email_or_password_not_valid() throws Exception {
+    public void should_return_400_code_when_name_not_valid() throws Exception {
         SignUpRequest user = new SignUpRequest(null, "azerty", "corinnemckay@zidox.com", "azerty");
 
         restMvc.perform(post(RESOURCE_PREFIX + "/register")
@@ -129,8 +140,41 @@ public class AuthControllerTest {
     }
 
     @Test
+    public void should_return_400_code_when_username_not_valid() throws Exception {
+        SignUpRequest user = new SignUpRequest("azerty", null, "corinnemckay@zidox.com", "azerty");
+
+        restMvc.perform(post(RESOURCE_PREFIX + "/register")
+                .contentType(TestUtil.APPLICATION_JSON_UTF8)
+                .content(TestUtil.convertObjectToJsonBytes(user)))
+                .andExpect(status().isBadRequest())
+                .andExpect(content().string(String.format("{\"message\":\"Username cannot be empty \",\"errorCode\":\"%s\"}", BAD_REQUEST.getReasonPhrase())));
+    }
+
+    @Test
+    public void should_return_400_code_when_email_not_valid() throws Exception {
+        SignUpRequest user = new SignUpRequest("azerty", "azerty", null, "azerty");
+
+        restMvc.perform(post(RESOURCE_PREFIX + "/register")
+                .contentType(TestUtil.APPLICATION_JSON_UTF8)
+                .content(TestUtil.convertObjectToJsonBytes(user)))
+                .andExpect(status().isBadRequest())
+                .andExpect(content().string(String.format("{\"message\":\"Email cannot be empty \",\"errorCode\":\"%s\"}", BAD_REQUEST.getReasonPhrase())));
+    }
+
+    @Test
+    public void should_return_400_code_when_password_not_valid() throws Exception {
+        SignUpRequest user = new SignUpRequest("azerty", "azerty", "corinnemckay@zidox.com", null);
+
+        restMvc.perform(post(RESOURCE_PREFIX + "/register")
+                .contentType(TestUtil.APPLICATION_JSON_UTF8)
+                .content(TestUtil.convertObjectToJsonBytes(user)))
+                .andExpect(status().isBadRequest())
+                .andExpect(content().string(String.format("{\"message\":\"Password cannot be empty \",\"errorCode\":\"%s\"}", BAD_REQUEST.getReasonPhrase())));
+    }
+
+    @Test
     @Parameters({"Corinne Conway, Mckay, corinnemckay@zidox.com, Hopkins"})
-    public void should_400_when_username_exists_and_return_error_message(String name, String username, String email, String password) throws Exception {
+    public void should_return_400_code_with_error_message_when_username_exists(String name, String username, String email, String password) throws Exception {
         SignUpRequest user = new SignUpRequest(name, username, email, password);
         Mockito.doReturn(true).when(userRepository).existsByUsername(username);
         restMvc.perform(post(RESOURCE_PREFIX + "/register")
@@ -142,7 +186,7 @@ public class AuthControllerTest {
 
     @Test
     @Parameters({"Corinne Conway, Mckay, corinnemckay@zidox.com, Hopkins"})
-    public void should_400_when_email_exists_and_return_error_message(String name, String username, String email, String password) throws Exception {
+    public void should_return_400_code_with_error_message_when_email_exists(String name, String username, String email, String password) throws Exception {
         SignUpRequest user = new SignUpRequest(name, username, email, password);
         Mockito.doReturn(true).when(userRepository).existsByEmail(email);
         restMvc.perform(post(RESOURCE_PREFIX + "/register")
