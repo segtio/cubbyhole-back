@@ -2,8 +2,8 @@ package com.kata.cubbyhole.repository;
 
 import com.kata.cubbyhole.model.Plan;
 import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.stereotype.Repository;
+import org.springframework.data.rest.core.annotation.RepositoryRestResource;
 
-@Repository
+@RepositoryRestResource(collectionResourceRel = "plan", path = "plan")
 public interface PlanRepository extends JpaRepository<Plan, Long> {
 }
