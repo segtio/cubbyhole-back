@@ -4,6 +4,7 @@ import com.kata.cubbyhole.model.enumeration.RoleName;
 import org.hibernate.annotations.NaturalId;
 
 import javax.persistence.*;
+import java.util.Objects;
 
 @Entity
 @Table(name = "roles")
@@ -49,15 +50,15 @@ public class Role {
 
         Role role = (Role) o;
 
-        if (!id.equals(role.id)) return false;
+        if (!Objects.equals(id, role.id)) return false;
         return name == role.name;
 
     }
 
     @Override
     public int hashCode() {
-        int result = id.hashCode();
-        result = 31 * result + name.hashCode();
+        int result = id != null ? id.hashCode() : 0;
+        result = 31 * result + (name != null ? name.hashCode() : 0);
         return result;
     }
 }

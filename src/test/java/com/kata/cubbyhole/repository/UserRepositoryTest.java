@@ -8,11 +8,14 @@ import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.jdbc.Sql;
+import org.springframework.test.context.jdbc.SqlGroup;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.springframework.test.context.jdbc.Sql.ExecutionPhase.AFTER_TEST_METHOD;
+import static org.springframework.test.context.jdbc.Sql.ExecutionPhase.BEFORE_TEST_METHOD;
 
 
 @RunWith(SpringJUnitParams.class)
@@ -23,7 +26,10 @@ public class UserRepositoryTest {
     private UserRepository userRepository;
 
     @Test
-    @Sql({"/data/users.sql"})
+    @SqlGroup({
+            @Sql(executionPhase = BEFORE_TEST_METHOD, scripts = "/data/users.sql"),
+            @Sql(executionPhase = AFTER_TEST_METHOD, scripts = "/data/cleanup_users.sql")
+    })
     @Parameters({"corinnemckay@zidox.com, Corinne Conway, true"})
     public void should_find_by_email(String email, String name, boolean isPresent) {
         Optional<User> userOptional = userRepository.findByEmail(email);
@@ -33,7 +39,10 @@ public class UserRepositoryTest {
     }
 
     @Test
-    @Sql({"/data/users.sql"})
+    @SqlGroup({
+            @Sql(executionPhase = BEFORE_TEST_METHOD, scripts = "/data/users.sql"),
+            @Sql(executionPhase = AFTER_TEST_METHOD, scripts = "/data/cleanup_users.sql")
+    })
     @Parameters({"Mendoza, Mendoza@zidox.com, Talley Heath, true", "hamptonwebb, hamptonwebb@zidox.com, Hampton Mcintyre, true"})
     public void should_find_by_username_or_email(String username, String email, String name, boolean isPresent) {
         Optional<User> userOptional = userRepository.findByUsernameOrEmail(username, email);
@@ -43,7 +52,10 @@ public class UserRepositoryTest {
     }
 
     @Test
-    @Sql({"/data/users.sql"})
+    @SqlGroup({
+            @Sql(executionPhase = BEFORE_TEST_METHOD, scripts = "/data/users.sql"),
+            @Sql(executionPhase = AFTER_TEST_METHOD, scripts = "/data/cleanup_users.sql")
+    })
     @Parameters({"Mendoza, Talley Heath, true"})
     public void should_find_by_username(String username, String name, boolean isPresent) {
         Optional<User> userOptional = userRepository.findByUsername(username);
@@ -53,7 +65,10 @@ public class UserRepositoryTest {
     }
 
     @Test
-    @Sql({"/data/users.sql"})
+    @SqlGroup({
+            @Sql(executionPhase = BEFORE_TEST_METHOD, scripts = "/data/users.sql"),
+            @Sql(executionPhase = AFTER_TEST_METHOD, scripts = "/data/cleanup_users.sql")
+    })
     @Parameters({"Mendoza, true", "azerty, false"})
     public void should_check_if_exist_by_username(String username, boolean exists) {
         boolean isUsername = userRepository.existsByUsername(username);
@@ -62,7 +77,10 @@ public class UserRepositoryTest {
     }
 
     @Test
-    @Sql({"/data/users.sql"})
+    @SqlGroup({
+            @Sql(executionPhase = BEFORE_TEST_METHOD, scripts = "/data/users.sql"),
+            @Sql(executionPhase = AFTER_TEST_METHOD, scripts = "/data/cleanup_users.sql")
+    })
     @Parameters({"hamptonwebb@zidox.com, true"})
     public void should_check_if_exist_by_email(String email, boolean exists) {
         boolean isUsername = userRepository.existsByEmail(email);

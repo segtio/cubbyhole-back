@@ -4,6 +4,7 @@ import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
+import java.util.Objects;
 
 @Entity
 @Table(name = "plans")
@@ -84,21 +85,21 @@ public class Plan extends AbstractAuditingEntity {
 
         Plan plan = (Plan) o;
 
-        if (!id.equals(plan.id)) return false;
-        if (!name.equals(plan.name)) return false;
-        if (!price.equals(plan.price)) return false;
-        if (!duration.equals(plan.duration)) return false;
-        return storagespace.equals(plan.storagespace);
+        if (!Objects.equals(id, plan.id)) return false;
+        if (!Objects.equals(name, plan.name)) return false;
+        if (!Objects.equals(price, plan.price)) return false;
+        if (!Objects.equals(duration, plan.duration)) return false;
+        return Objects.equals(storagespace, plan.storagespace);
 
     }
 
     @Override
     public int hashCode() {
-        int result = id.hashCode();
-        result = 31 * result + name.hashCode();
-        result = 31 * result + price.hashCode();
-        result = 31 * result + duration.hashCode();
-        result = 31 * result + storagespace.hashCode();
+        int result = id != null ? id.hashCode() : 0;
+        result = 31 * result + (name != null ? name.hashCode() : 0);
+        result = 31 * result + (price != null ? price.hashCode() : 0);
+        result = 31 * result + (duration != null ? duration.hashCode() : 0);
+        result = 31 * result + (storagespace != null ? storagespace.hashCode() : 0);
         return result;
     }
 }

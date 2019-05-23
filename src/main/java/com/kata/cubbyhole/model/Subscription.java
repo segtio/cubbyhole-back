@@ -7,6 +7,7 @@ import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import java.time.Instant;
+import java.util.Objects;
 
 @Entity
 @Table(name = "subscriptions")
@@ -76,19 +77,19 @@ public class Subscription extends AbstractAuditingEntity {
 
         Subscription that = (Subscription) o;
 
-        if (!id.equals(that.id)) return false;
-        if (!expireOn.equals(that.expireOn)) return false;
-        if (!user.equals(that.user)) return false;
-        return plan.equals(that.plan);
+        if (!Objects.equals(id, that.id)) return false;
+        if (!Objects.equals(expireOn, that.expireOn)) return false;
+        if (!Objects.equals(user, that.user)) return false;
+        return Objects.equals(plan, that.plan);
 
     }
 
     @Override
     public int hashCode() {
-        int result = id.hashCode();
-        result = 31 * result + expireOn.hashCode();
-        result = 31 * result + user.hashCode();
-        result = 31 * result + plan.hashCode();
+        int result = id != null ? id.hashCode() : 0;
+        result = 31 * result + (expireOn != null ? expireOn.hashCode() : 0);
+        result = 31 * result + (user != null ? user.hashCode() : 0);
+        result = 31 * result + (plan != null ? plan.hashCode() : 0);
         return result;
     }
 }

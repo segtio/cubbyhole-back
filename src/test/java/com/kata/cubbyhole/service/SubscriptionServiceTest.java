@@ -15,12 +15,15 @@ import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.jdbc.Sql;
+import org.springframework.test.context.jdbc.SqlGroup;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.Instant;
 
 import static java.time.temporal.ChronoUnit.DAYS;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.springframework.test.context.jdbc.Sql.ExecutionPhase.AFTER_TEST_METHOD;
+import static org.springframework.test.context.jdbc.Sql.ExecutionPhase.BEFORE_TEST_METHOD;
 
 @RunWith(SpringJUnitParams.class)
 @SpringBootTest
@@ -45,7 +48,10 @@ public class SubscriptionServiceTest {
 
 
     @Test
-    @Sql({"/data/users.sql"})
+    @SqlGroup({
+            @Sql(executionPhase = BEFORE_TEST_METHOD, scripts = "/data/users.sql"),
+            @Sql(executionPhase = AFTER_TEST_METHOD, scripts = "/data/cleanup_users.sql")
+    })
     @Parameters({"Cervantes"})
     public void should_save_subscription(String username) {
         User user = userRepository.findByUsername(username).get();
