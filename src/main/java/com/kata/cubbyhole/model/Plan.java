@@ -76,4 +76,29 @@ public class Plan extends AbstractAuditingEntity {
     public void setStoragespace(Long storagespace) {
         this.storagespace = storagespace;
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        Plan plan = (Plan) o;
+
+        if (!id.equals(plan.id)) return false;
+        if (!name.equals(plan.name)) return false;
+        if (!price.equals(plan.price)) return false;
+        if (!duration.equals(plan.duration)) return false;
+        return storagespace.equals(plan.storagespace);
+
+    }
+
+    @Override
+    public int hashCode() {
+        int result = id.hashCode();
+        result = 31 * result + name.hashCode();
+        result = 31 * result + price.hashCode();
+        result = 31 * result + duration.hashCode();
+        result = 31 * result + storagespace.hashCode();
+        return result;
+    }
 }

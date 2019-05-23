@@ -68,4 +68,27 @@ public class Subscription extends AbstractAuditingEntity {
     public void setPlan(Plan plan) {
         this.plan = plan;
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        Subscription that = (Subscription) o;
+
+        if (!id.equals(that.id)) return false;
+        if (!expireOn.equals(that.expireOn)) return false;
+        if (!user.equals(that.user)) return false;
+        return plan.equals(that.plan);
+
+    }
+
+    @Override
+    public int hashCode() {
+        int result = id.hashCode();
+        result = 31 * result + expireOn.hashCode();
+        result = 31 * result + user.hashCode();
+        result = 31 * result + plan.hashCode();
+        return result;
+    }
 }
