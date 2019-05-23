@@ -43,7 +43,6 @@ public class UserControllerTest {
     private SubscriptionService subscriptionService;
 
     @Autowired
-    // @Mock
     private UserRepository userRepository;
 
     @Autowired
