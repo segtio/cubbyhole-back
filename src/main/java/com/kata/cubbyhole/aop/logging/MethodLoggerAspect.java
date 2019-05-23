@@ -11,10 +11,14 @@ import org.springframework.boot.logging.LogLevel;
 import org.springframework.stereotype.Component;
 
 import java.lang.reflect.Method;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 @Aspect
 @Component
 public class MethodLoggerAspect {
+
+    private static String STAR = "**********";
 
     @Pointcut("@within(com.kata.cubbyhole.config.logging.annotation.MethodLogger)" +
             "|| @annotation(com.kata.cubbyhole.config.logging.annotation.MethodLogger)")
@@ -26,24 +30,15 @@ public class MethodLoggerAspect {
     public Object around(ProceedingJoinPoint point) throws Throwable {
         MethodSignature signature = (MethodSignature) point.getSignature();
         Method method = signature.getMethod();
+        Class<?> pointClass = point.getTarget().getClass();
 
-        MethodLogger loggableMethod = method.getAnnotation(MethodLogger.class);
-        MethodLogger loggableClass = point.getTarget().getClass().getAnnotation(MethodLogger.class);
+        LogLevel logLevel = getLogLevel(pointClass, method);
 
-        LogLevel logLevel = loggableMethod != null ? loggableMethod.value() : loggableClass.value();
-
-        String star = "**********";
-        LogWriter.write(point.getTarget().getClass(), logLevel, star + method.getName() + "() start execution" + star);
+        LogWriter.write(pointClass, logLevel, STAR + method.getName() + "() start execution" + STAR);
 
         if (point.getArgs() != null && point.getArgs().length > 0) {
-            StringBuilder sb = new StringBuilder();
-            for (int i = 0; i < point.getArgs().length; i++) {
-                sb.append(method.getParameterTypes()[i].getName() + ":" + point.getArgs()[i]);
-                if (i < point.getArgs().length - 1)
-                    sb.append(", ");
-            }
-
-            LogWriter.write(point.getTarget().getClass(), logLevel, method.getName() + "() args Type: " + sb.getClass().getName() + " args: " + sb);
+            StringBuilder sb = buildParameters(point, method);
+            LogWriter.write(pointClass, logLevel, method.getName() + "() args Type: " + sb.getClass().getName() + " args: " + sb);
         }
 
         long startTime = System.currentTimeMillis();
@@ -51,12 +46,27 @@ public class MethodLoggerAspect {
 
         long endTime = System.currentTimeMillis();
 
-        if (result != null) {
-            LogWriter.write(point.getTarget().getClass(), logLevel, method.getName() + "() Result Type: " + result.getClass().getName() + " Result: " + result);
-        }
+        String resultType = result == null ? pointClass.getName() : result.getClass().getName();
 
-        LogWriter.write(point.getTarget().getClass(), logLevel, star + method.getName() + "() finished execution and takes " + (endTime - startTime) + " millis time to execute " + star);
+        LogWriter.write(pointClass, logLevel, method.getName() + "() Result Type: " + resultType + " Result: " + result);
+
+        LogWriter.write(pointClass, logLevel, STAR + method.getName() + "() finished execution and takes " + (endTime - startTime) + " millis time to execute " + STAR);
 
         return result;
     }
+
+    private LogLevel getLogLevel(Class<?> pointClass, Method method) {
+        MethodLogger loggableMethod = method.getAnnotation(MethodLogger.class);
+        MethodLogger loggableClass = pointClass.getAnnotation(MethodLogger.class);
+        return loggableMethod != null ? loggableMethod.value() : loggableClass.value();
+    }
+
+    private StringBuilder buildParameters(ProceedingJoinPoint point, Method method) {
+        Object[] pointArgs = point.getArgs();
+        String pointArgsString = IntStream.range(0, pointArgs.length)
+                .mapToObj(i -> method.getParameterTypes()[i].getName() + ":" + pointArgs[i])
+                .collect(Collectors.joining(", "));
+        return new StringBuilder(pointArgsString);
+    }
+
 }
