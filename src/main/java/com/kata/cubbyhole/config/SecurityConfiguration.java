@@ -29,11 +29,16 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 )
 public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 
-    @Autowired
+    final
     CustomUserDetailsService customUserDetailsService;
 
+    private final JwtAuthenticationEntryPoint unauthorizedHandler;
+
     @Autowired
-    private JwtAuthenticationEntryPoint unauthorizedHandler;
+    public SecurityConfiguration(CustomUserDetailsService customUserDetailsService, JwtAuthenticationEntryPoint unauthorizedHandler) {
+        this.customUserDetailsService = customUserDetailsService;
+        this.unauthorizedHandler = unauthorizedHandler;
+    }
 
     @Bean(BeanIds.AUTHENTICATION_MANAGER)
     @Override
@@ -47,7 +52,7 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
     }
 
     @Override
-    public void configure(WebSecurity web) throws Exception {
+    public void configure(WebSecurity web) {
         web.ignoring()
                 .antMatchers(HttpMethod.OPTIONS, "/**")
                 .antMatchers("/swagger-ui/index.html")
@@ -77,7 +82,7 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
                 .authorizeRequests()
                 .antMatchers(Constants.APIV1_PREFIX + "/auth/**")
                 .permitAll()
-                .antMatchers("/api/user/checkUsernameAvailability", "/api/user/checkEmailAvailability")
+                .antMatchers(Constants.APIV1_PREFIX + "/user/checkUsernameAvailability", Constants.APIV1_PREFIX + "/user/checkEmailAvailability")
                 .permitAll()
                 .anyRequest()
                 .authenticated()
